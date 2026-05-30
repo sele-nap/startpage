@@ -1,150 +1,391 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>✦ startpage</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Crimson+Pro:wght@300;400&display=swap');
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --base: #191724; --surface: #1f1d2e; --overlay: #26233a;
-    --muted: #6e6a86; --subtle: #908caa; --text: #e0def4;
-    --love: #eb6f92; --gold: #f6c177; --rose: #ebbcba;
-    --foam: #9ccfd8; --iris: #c4a7e7;
-    --hl-med: #403d52; --hl-high: #524f67;
-  }
-  body {
-    background: var(--base); color: var(--text);
-    font-family: 'Crimson Pro', Georgia, serif;
-    min-height: 100vh; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    padding: 2rem 1rem; position: relative; overflow-x: hidden;
-  }
-  body::before {
-    content: ''; position: fixed; top: -120px; left: -80px;
-    width: 420px; height: 420px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(196,167,231,0.07) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  body::after {
-    content: ''; position: fixed; bottom: -100px; right: -60px;
-    width: 380px; height: 380px; border-radius: 50%;
-    background: radial-gradient(circle, rgba(235,111,146,0.06) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .page { width: 100%; max-width: 900px; display: flex; flex-direction: column; align-items: center; gap: 2.5rem; }
-  .clock-block { text-align: center; animation: fadeUp 0.8s ease both; }
-  .clock { font-family: 'Cormorant Garamond', serif; font-size: 120px; font-weight: 300; letter-spacing: -2px; color: var(--text); line-height: 1; }
-  .clock .sep { color: var(--muted); animation: blink 1s step-end infinite; }
-  @keyframes blink { 50% { opacity: 0; } }
-  .date-line { font-size: 24px; color: var(--subtle); letter-spacing: 0.12em; text-transform: lowercase; margin-top: 8px; font-style: italic; }
-  .weather-block {
-    display: flex; align-items: center; gap: 14px;
-    background: var(--overlay); border: 1px solid var(--hl-med);
-    border-radius: 40px; padding: 12px 28px; font-size: 20px;
-    color: var(--subtle); animation: fadeUp 0.8s 0.1s ease both;
-  }
-  .weather-block .temp { color: var(--foam); font-weight: 400; }
-  .weather-block .loc { color: var(--muted); font-size: 17px; }
-  .divider { width: 100%; display: flex; align-items: center; gap: 12px; animation: fadeUp 0.8s 0.2s ease both; }
-  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, transparent, var(--hl-med), transparent); }
-  .divider span { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--muted); }
-  .links-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; width: 100%; animation: fadeUp 0.8s 0.3s ease both; }
-  .link-card {
-    background: var(--surface); border: 1px solid var(--hl-med);
-    border-radius: 16px; padding: 22px 24px; text-decoration: none;
-    display: flex; flex-direction: column; gap: 10px;
-    transition: background 0.2s, border-color 0.2s, transform 0.15s;
-  }
-  .link-card:hover { background: var(--overlay); border-color: var(--hl-high); transform: translateY(-2px); }
-  .link-card .icon { font-size: 28px; line-height: 1; }
-  .link-card .label { font-size: 20px; color: var(--text); font-family: 'Crimson Pro', serif; }
-  .link-card .sublabel { font-size: 15px; color: var(--muted); font-style: italic; }
-  .link-card.love .icon { color: var(--love); }
-  .link-card.gold .icon { color: var(--gold); }
-  .link-card.rose .icon { color: var(--rose); }
-  .link-card.iris .icon { color: var(--iris); }
-  .catfact-block { text-align: center; padding: 0 1rem; animation: fadeUp 0.8s 0.5s ease both; display: flex; flex-direction: column; align-items: center; gap: 14px; }
-  .catfact-label { font-size: 15px; color: var(--muted); letter-spacing: 0.18em; text-transform: uppercase; }
-  .catfact-text { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-style: italic; font-weight: 300; color: var(--subtle); line-height: 1.6; max-width: 750px; }
-  .deco { font-family: 'Cormorant Garamond', serif; font-size: 18px; color: var(--hl-high); letter-spacing: 0.3em; animation: fadeUp 0.8s 0.6s ease both; }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-</style>
-</head>
-<body>
-<div class="page">
-  <div class="clock-block">
-    <div class="clock" id="clock">00<span class="sep">:</span>00</div>
-    <div class="date-line" id="dateline"></div>
-  </div>
-  <div class="weather-block">
-    <span id="wicon">⟳</span>
-    <span class="temp" id="wtemp">—</span>
-    <span id="wdesc">loading…</span>
-    <span class="loc">Lyon</span>
-  </div>
-  <div class="divider"><span>✦</span></div>
-  <div class="links-grid">
-    <a class="link-card love" href="https://github.com/sele-nap" target="_blank">
-      <span class="icon">⬡</span><span class="label">GitHub</span><span class="sublabel">sele-nap</span>
-    </a>
-    <a class="link-card iris" href="https://calendar.google.com" target="_blank">
-      <span class="icon">◈</span><span class="label">Calendar</span><span class="sublabel">today's agenda</span>
-    </a>
-    <a class="link-card gold" href="https://mail.google.com" target="_blank">
-      <span class="icon">✉</span><span class="label">Mail</span><span class="sublabel">inbox</span>
-    </a>
-    <a class="link-card rose" href="https://notion.so" target="_blank">
-      <span class="icon">◇</span><span class="label">Notion</span><span class="sublabel">notes & todos</span>
-    </a>
-  </div>
-  <div class="divider"><span>✦</span></div>
-  <div class="catfact-block">
-    <span class="catfact-label">✦ cat fact of the day ✦</span>
-    <p class="catfact-text" id="catfact-text">fetching feline wisdom…</p>
-  </div>
-  <div class="deco">⸻ ✿ ⸻</div>
-</div>
-<script>
-function updateClock() {
-  const now = new Date();
-  const h = String(now.getHours()).padStart(2, '0');
-  const m = String(now.getMinutes()).padStart(2, '0');
-  document.getElementById('clock').innerHTML = `${h}<span class="sep">:</span>${m}`;
-  const days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
-  const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
-  document.getElementById('dateline').textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-}
-updateClock();
-setInterval(updateClock, 1000);
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>✦ startpage</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Crimson+Pro:wght@300;400&display=swap');
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --base: #191724;
+        --surface: #1f1d2e;
+        --overlay: #26233a;
+        --muted: #6e6a86;
+        --subtle: #908caa;
+        --text: #e0def4;
+        --love: #eb6f92;
+        --gold: #f6c177;
+        --rose: #ebbcba;
+        --foam: #9ccfd8;
+        --iris: #c4a7e7;
+        --hl-med: #403d52;
+        --hl-high: #524f67;
+      }
+      body {
+        background: var(--base);
+        color: var(--text);
+        font-family: 'Crimson Pro', Georgia, serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+        position: relative;
+        overflow-x: hidden;
+      }
+      body::before {
+        content: '';
+        position: fixed;
+        top: -120px;
+        left: -80px;
+        width: 420px;
+        height: 420px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(196, 167, 231, 0.07) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      body::after {
+        content: '';
+        position: fixed;
+        bottom: -100px;
+        right: -60px;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgba(235, 111, 146, 0.06) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .page {
+        width: 100%;
+        max-width: 900px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2.5rem;
+      }
+      .clock-block {
+        text-align: center;
+        animation: fadeUp 0.8s ease both;
+      }
+      .clock {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 120px;
+        font-weight: 300;
+        letter-spacing: -2px;
+        color: var(--text);
+        line-height: 1;
+      }
+      .clock .sep {
+        color: var(--muted);
+        animation: blink 1s step-end infinite;
+      }
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
+      .date-line {
+        font-size: 24px;
+        color: var(--subtle);
+        letter-spacing: 0.12em;
+        text-transform: lowercase;
+        margin-top: 8px;
+        font-style: italic;
+      }
+      .weather-block {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: var(--overlay);
+        border: 1px solid var(--hl-med);
+        border-radius: 40px;
+        padding: 12px 28px;
+        font-size: 20px;
+        color: var(--subtle);
+        animation: fadeUp 0.8s 0.1s ease both;
+      }
+      .weather-block .temp {
+        color: var(--foam);
+        font-weight: 400;
+      }
+      .weather-block .loc {
+        color: var(--muted);
+        font-size: 17px;
+      }
+      .divider {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: fadeUp 0.8s 0.2s ease both;
+      }
+      .divider::before,
+      .divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(
+          to right,
+          transparent,
+          var(--hl-med),
+          transparent
+        );
+      }
+      .divider span {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 22px;
+        color: var(--muted);
+      }
+      .links-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        width: 100%;
+        animation: fadeUp 0.8s 0.3s ease both;
+      }
+      .link-card {
+        background: var(--surface);
+        border: 1px solid var(--hl-med);
+        border-radius: 16px;
+        padding: 22px 24px;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        transition:
+          background 0.2s,
+          border-color 0.2s,
+          transform 0.15s;
+      }
+      .link-card:hover {
+        background: var(--overlay);
+        border-color: var(--hl-high);
+        transform: translateY(-2px);
+      }
+      .link-card .icon {
+        font-size: 28px;
+        line-height: 1;
+      }
+      .link-card .label {
+        font-size: 20px;
+        color: var(--text);
+        font-family: 'Crimson Pro', serif;
+      }
+      .link-card .sublabel {
+        font-size: 15px;
+        color: var(--muted);
+        font-style: italic;
+      }
+      .link-card.love .icon {
+        color: var(--love);
+      }
+      .link-card.gold .icon {
+        color: var(--gold);
+      }
+      .link-card.rose .icon {
+        color: var(--rose);
+      }
+      .link-card.iris .icon {
+        color: var(--iris);
+      }
+      .catfact-block {
+        text-align: center;
+        padding: 0 1rem;
+        animation: fadeUp 0.8s 0.5s ease both;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+      }
+      .catfact-label {
+        font-size: 15px;
+        color: var(--muted);
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+      .catfact-text {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 26px;
+        font-style: italic;
+        font-weight: 300;
+        color: var(--subtle);
+        line-height: 1.6;
+        max-width: 750px;
+      }
+      .deco {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 18px;
+        color: var(--hl-high);
+        letter-spacing: 0.3em;
+        animation: fadeUp 0.8s 0.6s ease both;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="clock-block">
+        <div class="clock" id="clock">00<span class="sep">:</span>00</div>
+        <div class="date-line" id="dateline"></div>
+      </div>
+      <div class="weather-block">
+        <span id="wicon">⟳</span>
+        <span class="temp" id="wtemp">—</span>
+        <span id="wdesc">loading…</span>
+        <span class="loc">Lyon</span>
+      </div>
+      <div class="divider"><span>✦</span></div>
+      <div class="links-grid">
+        <a
+          class="link-card love"
+          href="https://github.com/sele-nap"
+          target="_blank"
+        >
+          <span class="icon">⬡</span><span class="label">GitHub</span
+          ><span class="sublabel">sele-nap</span>
+        </a>
+        <a
+          class="link-card iris"
+          href="https://calendar.google.com"
+          target="_blank"
+        >
+          <span class="icon">◈</span><span class="label">Calendar</span
+          ><span class="sublabel">today's agenda</span>
+        </a>
+        <a
+          class="link-card gold"
+          href="https://mail.google.com"
+          target="_blank"
+        >
+          <span class="icon">✉</span><span class="label">Mail</span
+          ><span class="sublabel">inbox</span>
+        </a>
+        <a class="link-card rose" href="https://notion.so" target="_blank">
+          <span class="icon">◇</span><span class="label">Notion</span
+          ><span class="sublabel">notes & todos</span>
+        </a>
+      </div>
+      <div class="divider"><span>✦</span></div>
+      <div class="catfact-block">
+        <span class="catfact-label">✦ cat fact of the day ✦</span>
+        <p class="catfact-text" id="catfact-text">fetching feline wisdom…</p>
+      </div>
+      <div class="deco">⸻ ✿ ⸻</div>
+    </div>
+    <script>
+      function updateClock() {
+        const now = new Date();
+        const h = String(now.getHours()).padStart(2, '0');
+        const m = String(now.getMinutes()).padStart(2, '0');
+        document.getElementById('clock').innerHTML =
+          `${h}<span class="sep">:</span>${m}`;
+        const days = [
+          'sunday',
+          'monday',
+          'tuesday',
+          'wednesday',
+          'thursday',
+          'friday',
+          'saturday',
+        ];
+        const months = [
+          'january',
+          'february',
+          'march',
+          'april',
+          'may',
+          'june',
+          'july',
+          'august',
+          'september',
+          'october',
+          'november',
+          'december',
+        ];
+        document.getElementById('dateline').textContent =
+          `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+      }
+      updateClock();
+      setInterval(updateClock, 1000);
 
-async function fetchWeather() {
-  try {
-    const r = await fetch('https://api.open-meteo.com/v1/forecast?latitude=45.75&longitude=4.85&current_weather=true&temperature_unit=celsius');
-    const d = await r.json();
-    const cw = d.current_weather;
-    const codes = {0:'clear sky',1:'mostly clear',2:'partly cloudy',3:'overcast',45:'fog',48:'icy fog',51:'light drizzle',53:'drizzle',55:'heavy drizzle',61:'light rain',63:'rain',65:'heavy rain',71:'light snow',73:'snow',75:'heavy snow',80:'light showers',81:'showers',82:'heavy showers',95:'thunderstorm',96:'thunderstorm with hail'};
-    document.getElementById('wtemp').textContent = `${Math.round(cw.temperature)}°C`;
-    document.getElementById('wdesc').textContent = codes[cw.weathercode] || '—';
-    document.getElementById('wicon').textContent = cw.temperature > 20 ? '☀' : cw.temperature > 10 ? '⛅' : '☁';
-  } catch(e) {
-    document.getElementById('wdesc').textContent = 'unavailable';
-  }
-}
-fetchWeather();
+      async function fetchWeather() {
+        try {
+          const r = await fetch(
+            'https://api.open-meteo.com/v1/forecast?latitude=45.75&longitude=4.85&current_weather=true&temperature_unit=celsius',
+          );
+          const d = await r.json();
+          const cw = d.current_weather;
+          const codes = {
+            0: 'clear sky',
+            1: 'mostly clear',
+            2: 'partly cloudy',
+            3: 'overcast',
+            45: 'fog',
+            48: 'icy fog',
+            51: 'light drizzle',
+            53: 'drizzle',
+            55: 'heavy drizzle',
+            61: 'light rain',
+            63: 'rain',
+            65: 'heavy rain',
+            71: 'light snow',
+            73: 'snow',
+            75: 'heavy snow',
+            80: 'light showers',
+            81: 'showers',
+            82: 'heavy showers',
+            95: 'thunderstorm',
+            96: 'thunderstorm with hail',
+          };
+          document.getElementById('wtemp').textContent =
+            `${Math.round(cw.temperature)}°C`;
+          document.getElementById('wdesc').textContent =
+            codes[cw.weathercode] || '—';
+          document.getElementById('wicon').textContent =
+            cw.temperature > 20 ? '☀' : cw.temperature > 10 ? '⛅' : '☁';
+        } catch (e) {
+          document.getElementById('wdesc').textContent = 'unavailable';
+        }
+      }
+      fetchWeather();
 
-async function fetchCatFact() {
-  const el = document.getElementById('catfact-text');
-  try {
-    const r = await fetch('https://catfact.ninja/fact');
-    const d = await r.json();
-    el.textContent = `« ${d.fact} »`;
-  } catch(e) {
-    el.textContent = '« Cats are mysterious creatures that even the internet cannot always reach. »';
-  }
-}
-fetchCatFact();
-</script>
-</body>
+      async function fetchCatFact() {
+        const el = document.getElementById('catfact-text');
+        try {
+          const r = await fetch('https://catfact.ninja/fact');
+          const d = await r.json();
+          el.textContent = `« ${d.fact} »`;
+        } catch (e) {
+          el.textContent =
+            '« Cats are mysterious creatures that even the internet cannot always reach. »';
+        }
+      }
+      fetchCatFact();
+    </script>
+  </body>
 </html>
