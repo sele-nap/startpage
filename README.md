@@ -1,6 +1,6 @@
 # ✦ startpage
 
-> Aesthetic new tab page — because the default one is a crime.
+> A tiny HTML startpage because new tab anxiety is real
 
 A minimal, self-contained browser startpage built with a single HTML file. No dependencies, no build step, no nonsense.
 
