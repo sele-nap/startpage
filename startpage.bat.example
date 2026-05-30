@@ -1,0 +1,2 @@
+@echo off
+start "" "C:\Program Files\Google\Chrome\Application\chrome.exe" --allow-file-access-from-files --new-window "file:///C:/Users/YOUR_USERNAME/Documents/Startpage/startpage.html"
